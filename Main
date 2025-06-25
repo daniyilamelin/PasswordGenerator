@@ -1,0 +1,83 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner pp = new Scanner(System.in);
+
+        // Prompt for extra character sets in the password
+        System.out.println("Enter additional password data composed of digits:\n" +
+                "1) Keep only digits\n" +              // num
+                "2) Include lowercase letters in the password\n" +  // small
+                "3) Include uppercase letters in the password\n" +  // big
+                "4) Include symbols in the password\n" +            // symbols
+                "5) Include all of the above");                   // all
+
+        int choice = pp.nextInt();
+        Password password = new Password(" ".toCharArray(), 0);
+
+        switch (choice) {
+            case 1:
+                password = new Default(
+                    "1,2,3,4,5,6,7,8,9,0".toCharArray(), 1
+                );
+                break;
+            case 2:
+                password = new SmallWord(
+                    "qwertyuiopasdfghjklzxcvbnm1,2,3,4,5,6,7,8,9,0".toCharArray(), 2
+                );
+                break;
+            case 3:
+                password = new BigAlphabet(
+                    "1234567890QWERTYUIOPASDFGHJKLZXCVBNM".toCharArray(), 3
+                );
+                break;  // ← prevents falling into case 4
+            case 4:
+                password = new Symbol(
+                    "1234567890/*-+^&()@!#$?.,:;".toCharArray(), 4
+                );
+                break;
+            case 5:
+                password = new Combat(
+                    "!@#$%&*()-+=_/|?qwertyuiopasdfghjklzxcvbnm" +
+                    "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+                    .toCharArray(), 5
+                );
+                break;
+            default:
+                System.out.println(
+                    "You’ve pushed it too far; starting to delete the System32 folder"
+                );
+                for (int i = 1; i <= 10; i++) {
+                    System.out.println(i * 10 + "%");
+                }
+        }
+
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("Choose an action\n" +
+                    "1) Generate password\n" +
+                    "2) Check password\n" +
+                    "3) Automatic generation");
+
+            int action = pp.nextInt();
+            switch (action) {
+                case 1:
+                    password.Logic();
+                    break;
+                case 2:
+                    password.Status();
+                    break;
+                case 3:
+                    password.AutoAim();
+                    break;
+                default:
+                    System.out.println(
+                        "You’ve pushed it too far; starting to delete the System32 folder"
+                    );
+                    for (int i = 1; i <= 10; i++) {
+                        System.out.println(i * 10 + "%");
+                    }
+            }
+        }
+    }
+}
