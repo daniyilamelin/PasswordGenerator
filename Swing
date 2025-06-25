@@ -1,0 +1,175 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+// Main application class extending JFrame to build the GUI
+public class Swing extends JFrame {
+    private JTextArea outputArea;      // Text area for displaying output messages
+    private Password password;         // Holds the Password instance with chosen settings
+
+    // Constructor: sets up the window and all UI components
+    public Swing() {
+        setTitle("Password Manager");                           
+        setSize(600, 500);                                     
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+        setLocationRelativeTo(null);                           
+
+        // Use a GridBagLayout for flexible placement of controls
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);                   
+        gbc.fill = GridBagConstraints.HORIZONTAL;              
+
+        int gridY = 0;  // Row index for placing components
+
+        // Window title label
+        JLabel titleLabel = new JLabel("Password Manager");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        gbc.gridx = 0;
+        gbc.gridy = gridY++;
+        gbc.gridwidth = 2;   // Span two columns
+        panel.add(titleLabel, gbc);
+
+        // Instruction label
+        panel.add(
+            new JLabel("Select password options:"), 
+            getConstraints(0, gridY++, 2)
+        );
+
+        // Available password presets mapped to actions
+        Map<String, Runnable> passwordOptions = new LinkedHashMap<>();
+        passwordOptions.put(
+            "1) Digits only",
+            () -> password = new Default("1234567890".toCharArray(), 1)
+        );
+        passwordOptions.put(
+            "2) Lowercase letters and digits",
+            () -> password = new SmallWord(
+                "qwertyuiopasdfghjklzxcvbnm1234567890".toCharArray(), 2
+            )
+        );
+        passwordOptions.put(
+            "3) Uppercase letters and digits",
+            () -> password = new BigAlphabet(
+                "1234567890QWERTYUIOPASDFGHJKLZXCVBNM".toCharArray(), 3
+            )
+        );
+        passwordOptions.put(
+            "4) Symbols and digits",
+            () -> password = new Symbol(
+                "1234567890/*-+^&()@!#$?.,:;".toCharArray(), 4
+            )
+        );
+        passwordOptions.put(
+            "5) All character types",
+            () -> password = new Combat(
+                "!@#$%&*()-+=_/|?qwertyuiopasdfghjklzxcvbnm" +
+                "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+                .toCharArray(), 5
+            )
+        );
+
+        // Add a button for each preset
+        for (Map.Entry<String, Runnable> entry : passwordOptions.entrySet()) {
+            panel.add(
+                createButton(entry.getKey(), entry.getValue()),
+                getConstraints(0, gridY++, 2)
+            );
+        }
+
+        // Output area with scroll pane
+        outputArea = new JTextArea(8, 30);
+        outputArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        outputArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+        gbc = getConstraints(0, gridY++, 2);
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(scrollPane, gbc);
+
+        // Action selection label
+        panel.add(
+            new JLabel("Choose an action:"), 
+            getConstraints(0, gridY++, 2)
+        );
+
+        // Action buttons
+        panel.add(
+            createButton("Generate password", this::generatePassword),
+            getConstraints(0, gridY++, 2)
+        );
+        panel.add(
+            createButton("Check password", this::checkPassword),
+            getConstraints(0, gridY++, 2)
+        );
+        panel.add(
+            createButton("Auto-generate", this::autoGenerate),
+            getConstraints(0, gridY++, 2)
+        );
+
+        add(panel);
+    }
+
+    // Helper to build buttons with text and click action
+    private JButton createButton(String text, Runnable action) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.PLAIN, 16));
+        button.addActionListener(e -> action.run());
+        button.setPreferredSize(new Dimension(200, 40));
+        return button;
+    }
+
+    // Helper to configure GridBagConstraints for a component
+    private GridBagConstraints getConstraints(int x, int y, int width) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = x;
+        gbc.gridy = y;
+        gbc.gridwidth = width;
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        return gbc;
+    }
+
+    // Called when "Generate password" is clicked
+    private void generatePassword() {
+        if (password != null) {
+            password.Logic();
+            log("Password generated!");
+        } else {
+            log("Please select password options first!");
+        }
+    }
+
+    // Called when "Check password" is clicked
+    private void checkPassword() {
+        if (password != null) {
+            password.Status();
+            log("Password check completed!");
+        } else {
+            log("Please select password options first!");
+        }
+    }
+
+    // Called when "Auto-generate" is clicked
+    private void autoGenerate() {
+        if (password != null) {
+            password.AutoAim();
+            log("Auto-generation completed!");
+        } else {
+            log("Please select password options first!");
+        }
+    }
+
+    // Append a message to the output text area
+    private void log(String message) {
+        outputArea.append(message + "\n");
+    }
+
+    // Main entry point to launch the GUI
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Swing app = new Swing();
+            app.setVisible(true);
+        });
+    }
+}
