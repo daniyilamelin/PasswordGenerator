@@ -13,9 +13,6 @@ Features
 - Automatic password generation
   Generate a strong password automatically by selecting only length and character types.
 
-- Password strength check
-  Basic evaluation of password strength.
-
 Tech Stack
 
 - Java
